@@ -1,4 +1,4 @@
-import { Github, GithubIcon } from "lucide-react";
+import { GithubIcon } from "lucide-react";
 import "./App.css";
 import Board from "./components/Board";
 
