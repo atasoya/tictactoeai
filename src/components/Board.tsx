@@ -1,6 +1,6 @@
 import { X, Circle } from "lucide-react";
 import { useState } from "react";
-import { findBestMove } from "../ai/minmax";
+import { findBestMove } from "../ai/minimax";
 import { isGameOver } from "../ai/helpers";
 
 function Board() {
