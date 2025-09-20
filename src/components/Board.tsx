@@ -10,6 +10,14 @@ function Board() {
 	const [isHumanGoesFirst, setIsHumanGoingFirst] = useState(true);
 	const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
 
+	const handlePlayAgain = () => {
+		setIsGameFinished(false);
+		setIsGameStarted(false);
+		setIsAiTurn(false);
+		setIsHumanGoingFirst(true);
+		setBoard(["", "", "", "", "", "", "", "", ""]);
+	};
+
 	const handleAiPlaysFirst = (i: number) => {
 		setIsHumanGoingFirst(false);
 		setBoard((prev) => {
@@ -45,7 +53,6 @@ function Board() {
 			const next = [...prev];
 			next[i] = isHumanGoesFirst ? "F" : "S";
 			if (isGameOver(next, isHumanGoesFirst ? "F" : "S").finished) {
-				console.log("stop");
 				setIsGameFinished(true);
 			}
 			setIsAiTurn(true);
@@ -53,7 +60,6 @@ function Board() {
 			const bestMove = findBestMove(next, isHumanGoesFirst ? "S" : "F");
 			next[bestMove] = isHumanGoesFirst ? "S" : "F";
 			if (isGameOver(next, isHumanGoesFirst ? "F" : "S").finished) {
-				console.log("stop");
 				setIsGameFinished(true);
 			}
 			setIsAiTurn(false);
@@ -89,7 +95,12 @@ function Board() {
 			</div>
 			<div className="flex gap-3 mt-5">
 				{isGameStarted ? (
-					<button className="bg-white rounded-md p-2">
+					<button
+						className="bg-white rounded-md p-2"
+						onClick={() => {
+							handlePlayAgain();
+						}}
+					>
 						Play again
 					</button>
 				) : (
