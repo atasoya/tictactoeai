@@ -1,19 +1,63 @@
 import { X, Circle } from "lucide-react";
 import { useState } from "react";
+import { findBestMove } from "../ai/minmax";
+import { isGameOver } from "../ai/helpers";
 
 function Board() {
+	const [isGameFinished, setIsGameFinished] = useState(false);
 	const [isGameStarted, setIsGameStarted] = useState(false);
 	const [isAiTurn, setIsAiTurn] = useState(false);
 	const [isHumanGoesFirst, setIsHumanGoingFirst] = useState(true);
 	const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
 
-	const handleTileClick = (i: number) => {
+	const handleAiPlaysFirst = (i: number) => {
+		setIsHumanGoingFirst(false);
 		setBoard((prev) => {
-			if (i < 0 || i >= prev.length || (prev[i] !== "" && !isAiTurn))
+			setIsGameStarted(true);
+			if (
+				i < 0 ||
+				i >= prev.length ||
+				prev[i] !== "" ||
+				isAiTurn ||
+				isGameFinished
+			)
 				return prev;
 
 			const next = [...prev];
 			next[i] = isHumanGoesFirst ? "F" : "S";
+
+			return next;
+		});
+	};
+
+	const handleTileClick = (i: number) => {
+		setBoard((prev) => {
+			setIsGameStarted(true);
+			if (
+				i < 0 ||
+				i >= prev.length ||
+				prev[i] !== "" ||
+				isAiTurn ||
+				isGameFinished
+			)
+				return prev;
+
+			const next = [...prev];
+			next[i] = isHumanGoesFirst ? "F" : "S";
+			if (isGameOver(next, isHumanGoesFirst ? "F" : "S").finished) {
+				console.log("stop");
+				setIsGameFinished(true);
+			}
+			setIsAiTurn(true);
+
+			const bestMove = findBestMove(next, isHumanGoesFirst ? "S" : "F");
+			next[bestMove] = isHumanGoesFirst ? "S" : "F";
+			if (isGameOver(next, isHumanGoesFirst ? "F" : "S").finished) {
+				console.log("stop");
+				setIsGameFinished(true);
+			}
+			setIsAiTurn(false);
+
 			return next;
 		});
 	};
@@ -25,7 +69,7 @@ function Board() {
 					return (
 						<div
 							key={i}
-							className="w-30 h-30 bg-white rounded-md flex items-center justify-center"
+							className="w-20 h-20 bg-white rounded-md flex items-center justify-center"
 							onClick={() => handleTileClick(i)}
 						>
 							{tile === "F" && (
@@ -45,13 +89,20 @@ function Board() {
 			</div>
 			<div className="flex gap-3 mt-5">
 				{isGameStarted ? (
-					<>no</>
+					<button className="bg-white rounded-md p-2">
+						Play again
+					</button>
 				) : (
 					<>
 						<button className="bg-white rounded-md p-2">
-							I want to play first
+							Human plays first
 						</button>
-						<button className="bg-white rounded-md p-2">
+						<button
+							className="bg-white rounded-md p-2"
+							onClick={() => {
+								handleAiPlaysFirst(0);
+							}}
+						>
 							AI plays first
 						</button>
 					</>
